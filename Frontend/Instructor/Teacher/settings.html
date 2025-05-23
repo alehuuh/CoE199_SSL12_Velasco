@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <style>
+        /* Styles from your current code */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            text-decoration: none;
+        }
+
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.8;
+            padding: 60px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px; /* Adjust based on actual header height */
+            background-color: #6200ea;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+        }
+
+        header h2 {
+            float: right;
+            font-size: 1.1rem;
+        }
+        header a.button {
+            padding: 1px 6px;
+            border: 1px outset buttonborder;
+            border-radius: 3px;
+            color: buttontext;
+            background-color: buttonface;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: 100px auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #6200ea;
+            color: white;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        .sidenav {
+            width: 200px;
+            height: calc(100vh - 50px);
+            background-color: #fff;
+            color: #000;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-top: 20px;
+        }
+
+        .nav, .bottom-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav li, .bottom-menu li {
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .nav li a, .bottom-menu li a {
+            display: flex;
+            align-items: center;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .nav li a i, .bottom-menu li a i {
+            margin-right: 10px;
+        }
+        .bottom-menu li:hover{
+            background-color: #6200ea;
+            color: #fff;
+        }
+        .bottom-menu li a:hover{
+            color: #fff;
+        }
+        form{
+            flex-direction: column;
+        }
+        .buttons{
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>You are logged in as <span id="name" style="font-weight: bold;"></span><a href="../login.html" class="button">Logout</a></h2>
+        <h1>Welcome</h1>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidenav">
+        <ul class="nav">
+            <li><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+            <li><a href="classes.html"><i class="material-icons">people</i> Classes</a></li>
+            <li><a href="attendance.html"><i class="material-icons">assignment</i> Attendance</a></li>
+        </ul>
+        <ul class="nav">
+            <li><a href="settings.html"><i class="material-icons">settings</i> Settings</a></li>
+            <!-- <li><a href="../login.html"><i class="material-icons">logout</i> Logout</a></li> -->
+        </ul>
+    </div>
+
+    <div class="container">
+        <form id="detailsForm" method="POST" action="/submit">
+            <div class="mb-3">
+                <label for="subjectcode" class="form-label">Instructor Lastname:</label>
+                <input type="text" class="form-control" id="instln" name="instln" required>
+            </div>
+            <div class="mb-3">
+                <label for="subjectcode" class="form-label">Instructor Firstname:</label>
+                <input type="text" class="form-control" id="instfn" name="instfn" required>
+            </div>
+            <div class="mb-3">
+                <label for="subname" class="form-label">Instructor Middlename:</label>
+                <input type="text" class="form-control" id="instmi" name="instmi" required>
+            </div>
+            <div class="mb-3">
+                <label for="subname" class="form-label">Email:</label>
+                <input type="text" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="buttons">
+                <button type="button" id="find" class="btn btn-info">Find Record</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="saveBtn" class="btn btn-success mt-3">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="userModal" class="modal-backdrop">
+        <div class="modal-content">
+            <h2>Select Instructor</h2>
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>Firstname</th>
+                        <th>Lastname</th>
+                        <th>Middlename</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="instructor-output"></tbody>
+            </table>
+            <button id="closeModalBtn" class="btn btn-danger mt-3">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let api = sessionStorage.getItem("api");
+        let insName = sessionStorage.getItem("instructorname");
+
+        document.getElementById('name').innerHTML = insName;
+
+        const findBtn = document.getElementById('find');
+        const addBtn = document.getElementById('add');
+        const deleteBtn = document.getElementById('delete');
+        const updateBtn = document.getElementById('saveBtn');
+        const userModal = document.getElementById('userModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const instList = document.getElementById('instructor-output');
+        const instFn = document.getElementById('instfn');
+        const instLn = document.getElementById('instln');
+        const instMi = document.getElementById('instmi');
+        const instEmail = document.getElementById('email');
+        let selectedInstructor = null;
+
+        // Generate teachers code that increments based on the current code in the Instructors 
+        document.addEventListener("DOMContentLoaded", async function () {
+        try {
+            const response = await fetch(`http://192.168.1.6:8085/api/Instructors`);
+            const teachers = await response.json();
+            console.log(teachers)
+
+            if (teachers.length > 0) {
+                // Extract the highest teacher code and increment it
+                const lastTeacher = teachers[teachers.length - 1];
+                const lastCode = lastTeacher.instructorcode; // "INS-007"
+                const lastNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+                newInstructorCode = `INS-${String(lastNumber + 1).padStart(3, '0')}`; // Increment and format
+                console.log(lastCode);
+                console.log(newInstructorCode);
+            }
+
+            } catch (error) {
+                console.error("Error fetching teachers:", error);
+            }
+        });
+
+        async function fetchInstructors() {
+            const response = await fetch('http://192.168.1.6:8085/api/Instructors');
+            const users = await response.json();
+            return users;
+        }
+
+        async function showModal() {
+            userModal.style.display = 'block';
+            const users = await fetchInstructors();
+            instList.innerHTML = ''; // Clear previous list
+            users.forEach(instructor => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${instructor.instructor_fn}</td>
+                    <td>${instructor.instructor_ln}</td>
+                    <td>${instructor.instructor_mi}</td>
+                    <td>${instructor.email}</td>
+                `;
+                row.addEventListener('click', () => selectInstructor(instructor));
+                instList.appendChild(row);
+            });
+        }
+
+        // Populate
+        function selectInstructor(instructor) {
+            instFn.value = instructor.instructor_fn;
+            instLn.value = instructor.instructor_ln;
+            instMi.value = instructor.instructor_mi;
+            instEmail.value = instructor.email;
+            closeModal();
+        }
+
+        // Close the modal
+        function closeModal() {
+            userModal.style.display = 'none';
+        }
+
+        async function addInstructor() {
+            const newInstructor = {
+                instructorcode: newInstructorCode,
+                instructor_fn: instFn.value,
+                instructor_ln: instLn.value,
+                instructor_mi: instMi.value,
+                email: instEmail.value,
+                password: 'sksksks'
+            };
+
+            alert(newInstructor);
+
+            const response = await fetch(`http://192.168.1.6:8085/api/Instructor`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newInstructor)
+            });
+            if (response.ok) {
+                alert('Instructor added successfully');
+                // Optionally refresh list or reset form
+            } else {
+                alert('Error adding instructor');
+            }
+        }
+
+        // async function updateInstructor() {
+        //     if (!selectInstructor) {
+        //         alert('No student selected to update');
+        //         return;
+        //     }
+
+        //     const updatedInstructor = {
+        //         instructorcode: 'INS-100',
+        //         instructor_fn: instFn.value,
+        //         instructor_ln: instLn.value,
+        //         instructor_mi: instMi.value,
+        //         email: instEmail.value,
+        //         password: 'sksksks'
+        //     };
+
+        //     console.log(updatedInstructor);
+
+        //     const response = await fetch(`http://192.168.1.8:8085/api/Instructor/${updatedInstructor.instructorcode}`, {
+        //         method: 'PUT',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify(updatedInstructor)
+        //     });
+
+        //     if (response.ok) {
+        //         alert('Instructor updated successfully');
+        //         // Optionally refresh list or reset form
+        //     } else {
+        //         alert('Error updating student');
+        //     }
+        // }
+
+        // // Event listeners
+        findBtn.addEventListener('click', showModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        // updateBtn.addEventListener('click', updateInstructor);
+    </script>
+</body>
+</html>
