@@ -8,7 +8,7 @@ const contractAddress = process.env.CONTRACT_ADDRESS; // get the iotlogs.sol con
 
  const provider = new ethers.providers.JsonRpcProvider();
  const signer = new ethers.Wallet(PRIVATE_KEY, provider);
- const {abi} = require("/AlejaThesis/Node_js_Api/api/blockchain-api/bin/contracts/iotlogs.json"); // set the location of he iotlogs contract
+ const {abi} = require("/-/Node_js_Api/api/blockchain-api/bin/contracts/iotlogs.json"); // set the location of he iotlogs contract
                                                                                                   //    deployed using Remix
  const contractInstance = new ethers.Contract(contractAddress, abi, signer); // Instance in executing iotlogs.sol contract
 //-------------
@@ -102,7 +102,7 @@ const transporter = nodemailer.createTransport({
 
             const emailContent = `
                 <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
-                    <strong>Attendance for ${description} ${section} in ${room}, 11:30 AM to ${formattedTo} on ${today}:</strong><br><br>
+                    <strong>Attendance for ${description} ${section} in ${room}, ${formattedFrom} to ${formattedTo} on ${today}:</strong><br><br>
                     <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                         <tr>
                             <th style="padding: 8px; text-align: left;">NAME</th>
@@ -350,89 +350,6 @@ async function getAttendance_Instructor(instructorcode, subjectcode = null, stud
     }
  }
 
-// async function AddIotLogs() {
-//     try {
-//         // Connect to SQL Server once outside the loop
-//         let sqlconnection = await sql.connect(config);
-
-//         // Starting timestamp
-//         let startTime = new Date('2025-04-21T01:00:00.000Z');
-//         const start = Date.now();
-
-//         for (let i = 0; i < 10000; i++) {
-//             // Increment time by 2 minutes for each iteration
-//             const timestampp = new Date(startTime.getTime() + i * 2 * 60 * 1000).toISOString();
-
-//             // Fake log generation
-//             const fakeLog = {
-//                 deviceid: "1",
-//                 devicename: "1",
-//                 deviceloc: "1",
-//                 rfid: "c2bbd74e",
-//                 classcode: "",
-//                 timestamp: timestampp,
-//                 transvalue: "1"
-//             };
-
-//             // Append to SQL Server
-//             let addLogs = await sqlconnection.request()
-//                 .input('deviceId', sql.VarChar, fakeLog.deviceid)
-//                 .input('devicename', sql.VarChar, fakeLog.devicename)
-//                 .input('deviceloc', sql.VarChar, fakeLog.deviceloc)
-//                 .input('rfid', sql.VarChar, fakeLog.rfid)
-//                 .input('classcode', sql.VarChar, fakeLog.classcode)
-//                 .input('timestamp', sql.VarChar, fakeLog.timestamp)
-//                 .input('transvalue', sql.VarChar, fakeLog.transvalue)
-//                 .execute('AVV_SP_AddIotLogs');
-
-//             console.log(addLogs.returnValue)
-//             console.log(timestampp)
-
-//             // Keep your original logic untouched
-//             if (addLogs.returnValue == 1) {
-//                 const jsonResult = JSON.stringify(addLogs.recordset);
-//                 const parsedResult = JSON.parse(jsonResult);
-
-//                 const transid = Math.abs(parsedResult.map(item => item.transId));
-//                 const deviceid = JSON.stringify(parsedResult.map(item => item.deviceId));
-//                 const devicename = JSON.stringify(parsedResult.map(item => item.deviceName));
-//                 const deviceloc = JSON.stringify(parsedResult.map(item => item.deviceLoc));
-//                 const rfid = JSON.stringify(parsedResult.map(item => item.rfid));
-//                 const classcode = JSON.stringify(parsedResult.map(item => item.classCode));
-//                 const timestamp = JSON.stringify(parsedResult.map(item => item.timeStamp));
-//                 const transvalue = JSON.stringify(parsedResult.map(item => item.transValue));
-
-//                 const tranx = await contractInstance.AddIotlog(
-//                     transid,
-//                     deviceid,
-//                     devicename,
-//                     deviceloc,
-//                     rfid,
-//                     classcode,
-//                     timestamp,
-//                     transvalue
-//                 );
-//                 // const receipt = await tranx.wait();
-//                 // console.log("Gas used:", receipt.gasUsed);
-//             } else {
-//                 console.log(`  Log ${i + 1} not inserted into SQL`);
-//             }
-//         }
-//         const end = Date.now();
-//         const totalTime = (end - start) / 1000; // seconds
-//         const tps = 10000 / totalTime;
-//         getIotLogs_blkchain();
-//         console.log(`time: ${tps}`);
-//         console.log(`start: ${start}`);
-//         console.log(`end: ${end}`);
-//         console.log(`total: ${totalTime}`);
-//     } catch (error) {
-//         console.error("❌ Error:", error);
-//     }
-// }
-
-
-
 
  async function getIotLogs_blkchain(){ // display/list blockchain iotlogs recorded - for checking only
      
@@ -538,40 +455,6 @@ async function getAttendance_Instructor(instructorcode, subjectcode = null, stud
             console.log(error)
         }
 }
-/* async function sqlserver_to_blkchain(){ // sync data from sql server to blkchain
-    
-    try {
-        
-        let sqlconnection = await sql.connect(config);
-        let sqlIotLogs = await sqlconnection.request()
-            .query('Select * from DeviceLogs')
-
-        
-     if (sqlIotLogs.recordset.length > 0) {
-
-        jsonResult = JSON.stringify(sqlIotLogs.recordset);
-        const parsedResult = JSON.parse(jsonResult);
-        for (let i = 0; i < parsedResult.length ; i++) {
-            const transid = Object.values(parsedResult[i])[0];
-            const deviceid = Object.values(parsedResult[i])[1];
-            const devicename = Object.values(parsedResult[i])[2];
-            const deviceloc = Object.values(parsedResult[i])[3];
-            const rfid = Object.values(parsedResult[i])[4];
-            const classcode = Object.values(parsedResult[i])[5];
-            const timestamp = Object.values(parsedResult[i])[6];
-            const transvalue = Object.values(parsedResult[i])[7];
-            // activate iotlogs.sol contract to add recordset to blockchain using the constants above as values
-            const tranx = await contractInstance.AddIotlog(transid, deviceid, devicename, deviceloc, rfid, classcode, timestamp, transvalue);
-        }
-        getIotLogs_blkchain();
-       
-        }
-    }
-
-    catch (error){
-        console.log(error)
-    }
-} */
 
  async function AddStudSubject(studsubjects){
     try{
@@ -1074,9 +957,7 @@ async function getrfid(){
     deleteInstructor : deleteInstructor,
     deleteSchedule : deleteSchedule,
     sendAttendanceEmails : sendAttendanceEmails,
-    // papa rfid capture 05052025
-    // capture rfid - papa 05052025
     getrfid : getrfid,
     clearrfid : clearrfid
-    // capture rfid - papa 05052025
+  
  }
