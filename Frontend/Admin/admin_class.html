@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+    <style>
+        :root {
+            --base-font-size: 18px;
+            --heading-scale: 1.25;  
+            --small-text: 0.875;    
+            --icon-scale: 1.2;      
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            font-size: var(--base-font-size);
+        }
+
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 70px 20px 20px 250px;
+            min-width: 320px;
+            overflow-x: hidden;
+            font-size: 1rem;
+            transition: padding 0.3s ease;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: 	#7B1113;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        header h2 {
+            font-size: calc(1rem * var(--heading-scale) * 0.85);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header a.button {
+            font-size: calc(1rem * var(--small-text));
+            padding: 4px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            color: white;
+            background-color: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+            background: 	#7B1113;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: calc(1rem * var(--icon-scale));
+        }
+
+        /* Sidebar Styles */
+        .sidenav {
+            width: 250px;
+            height: calc(100vh - 50px);
+            background-color: #fff;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 900;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .nav, .bottom-menu {
+            list-style-type: none;
+            padding: 15px 0;
+        }
+
+        .nav li, .bottom-menu li {
+            padding: 12px 20px;
+            margin: 3px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav li a, .bottom-menu li a {
+            display: flex;
+            align-items: center;
+            color: #444;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .nav li a i, .bottom-menu li a i {
+            margin-right: 12px;
+            font-size: calc(1rem * var(--icon-scale));
+            color: 	#7B1113;
+        }
+
+        /* Main Content Styles */
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        .section-title {
+            color: 	#7B1113;
+            margin-bottom: 15px;
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+        }
+
+        /* Form Styles */
+        .form-control {
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0px 0px 700px;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            font-size: 1rem;
+        }
+
+        .modal-content h2 {
+            font-size: calc(1rem * var(--heading-scale) * 1.3);
+        }
+
+        .modal-content table.dataTable {
+            margin: 10px 0 !important;
+            width: 100% !important;
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_length,
+        .modal-content .dataTables_wrapper .dataTables_filter,
+        .modal-content .dataTables_wrapper .dataTables_info,
+        .modal-content .dataTables_wrapper .dataTables_paginate {
+            padding: 8px;
+            font-size: calc(1rem * var(--small-text));
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 2px 8px;
+            margin: 0 2px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #7B1113;
+            color: white !important;
+            border-color: #7B1113;
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #f0f0f0;
+        }
+
+        .modal-content table.dataTable thead th {
+            padding: 10px 15px;
+        }
+
+        .modal-content table.dataTable tbody td {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        .modal-content table.dataTable tbody tr:hover {
+            background-color: rgba(123, 17, 19, 0.1);
+        }
+
+        #userTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        #userTable th, #userTable td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #userTable th {
+            font-size: calc(1rem * var(--small-text));
+            background-color: 	#7B1113;
+            color: white;
+        }
+
+        /* Responsive Font Scaling */
+        @media screen and (max-width: 992px) {
+            :root {
+                --base-font-size: 15px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            :root {
+                --base-font-size: 14px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            :root {
+                --base-font-size: 13px;
+            }
+            
+            #userTable th, #userTable td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 1200px) {
+            body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            h1{
+                padding-left: 50px;
+            }
+            
+            .sidenav {
+                transform: translateX(-100%);
+            }
+            
+            .sidenav.show {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+                background: 	#7B1113;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding-top: 100px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            header {
+                flex-direction: column;
+                height: auto;
+                text-align: center;
+                padding: 10px;
+            }
+            
+            header h1, header h2 {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            #userTable {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            #userTable th, #userTable td {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><button class="menu-toggle" id="menuToggle"><i class="material-icons">menu</i></button> Welcome</h1>
+        <h2>You are logged in as admin <span id="name" style="font-weight: bold;"></span><a href="../login.html" class="button" onclick="logout()">Logout</a></h2>
+    </header>
+
+    <!-- Admin Sidebar -->
+    <div class="sidenav">
+        <ul class="nav">
+            <li><a href="admin_dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+    
+            <!-- Manage Classes Dropdown -->
+            <li>
+                <a href="#classDropdown" data-bs-toggle="collapse" class="dropdown-toggle">
+                    <i class="material-icons">subject</i> Manage Records
+                </a>
+                <ul class="collapse list-unstyled" id="classDropdown">
+                    <li><a href="admin_student.html" class="dropdown-item">Manage Students</a></li>
+                    <li><a href="admin_teacher.html" class="dropdown-item">Manage Instructors</a></li>
+                    <li><a href="admin_class.html" class="dropdown-item">Manage Subjects</a></li>
+                    <li><a href="admin_courses.html" class="dropdown-item">Manage Courses</a></li>
+                    <li><a href="admin_schedule.html" class="dropdown-item">Manage Schedule</a></li>
+                </ul>
+            </li>
+    
+            <li><a href="admin_subjects.html"><i class="material-icons">people</i>Classes</a></li>
+            <!-- <li><a href="admin_attendance.html"><i class="material-icons">assignment</i>Attendance</a></li> -->
+        </ul>
+        <ul class="nav">
+            <li><a href="admin_settings.html"><i class="material-icons">settings</i> Settings</a></li>
+        </ul>
+    </div> 
+
+    <div class="container">
+        <h3 class="section-title">Add Subjects</h3>
+        <form id="subjectsForm" method="POST" action="/submit">
+            <div class="mb-3">
+                <label for="subcode" class="form-label">Subject Code</label>
+                <input type="text" class="form-control" id="subcode" name="subcode" readonly="readonly" required>
+            </div>
+            <div class="mb-3">
+                <label for="subname" class="form-label">Subject Name</label>
+                <input type="text" class="form-control" id="description" name="description" required>
+            </div>
+            <div class="mb-3">
+                <label for="section" class="form-label">Section</label>
+                <input type="text" class="form-control" id="section" name="section" required>
+            </div>
+            <div class="mb-3">
+                <label for="classcode" class="form-label">Class Code</label>
+                <input type="text" class="form-control" id="classcode" name="classcode" required>
+            </div>
+
+            <!-- <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>Student Code</th>
+                        <th>Student Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="idDisplay"></td>
+                        <td>
+                            <select class="form-select" id="stud-select" style="width: 350px;">
+                                <option selected>Student</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table> -->
+
+            <!-- <div class="buttons">
+                <button type="button" id="addRow" class="btn btn-primary">Add Row</button>
+                <button type="button" id="deleteRow" class="btn btn-danger">Delete Row</button>
+            </div> -->
+
+            <div class="buttons">
+                <button type="button" id="add" class="btn btn-primary">Add</button>
+                <button type="button" id="delete" class="btn btn-danger">Delete</button>
+                <button type="button" id="find" class="btn btn-info">Find Record</button>
+                <button type="button" id="find" onclick="reset()" class="btn btn-info">Clear</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="saveBtn" class="btn btn-success mt-3">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="subjModal" class="modal-backdrop">
+        <div class="modal-content">
+            <h2>Select Subjects</h2>
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>Subject Code</th>
+                        <th>Subject Name</th>
+                        <th>Section</th>
+                        <th>Class Code</th>
+                    </tr>
+                </thead>
+                <tbody id="subjects-output"></tbody>
+            </table>
+            <button id="closeModalBtn" class="btn btn-danger mt-3">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let ip = sessionStorage.getItem("api");
+
+        const findBtn = document.getElementById('find');
+        const addBtn = document.getElementById('add');
+        const deleteBtn = document.getElementById('delete');
+        const updateBtn = document.getElementById('saveBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const userModal = document.getElementById('subjModal');
+        const subList = document.getElementById('subjects-output');
+        const studentcode = document.getElementById('idDisplay');
+        const subCode = document.getElementById('subcode');
+        const subName = document.getElementById('description');
+        const subSection = document.getElementById('section');
+        const subClassCode = document.getElementById('classcode');
+        const subInst = document.getElementById('instructor-select');
+
+        function logout() {
+            sessionStorage.clear(); // Clears all session data
+            localStorage.clear();
+        }
+
+        window.onload = function () {
+            if (!sessionStorage.getItem("loggedIn")) {
+                window.location.href = "../login.html";
+            }
+        };
+
+        // Menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.querySelector('.sidenav').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidenav = document.querySelector('.sidenav');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (!sidenav.contains(e.target) && e.target !== menuToggle) {
+                sidenav.classList.remove('show');
+            }
+        });
+
+        // Show menu toggle when zoomed
+        function checkZoom() {
+            const menuToggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 1200 || window.devicePixelRatio > 1.25) {
+                menuToggle.style.display = 'block';
+            } else {
+                menuToggle.style.display = 'none';
+                document.querySelector('.sidenav').classList.remove('show');
+            }
+        }
+
+        window.addEventListener('resize', checkZoom);
+        window.addEventListener('load', checkZoom);
+
+        function reset() {
+            document.getElementById("detailsForm").reset();
+        }
+
+        // Generate Sub Code
+        document.addEventListener("DOMContentLoaded", async function () {
+            try {
+                const response = await fetch(`http://${ip}/api/SubjectsDropdown`);
+                const subjects = await response.json();
+
+                if (subjects.length > 0) {
+                    // Extract the highest teacher code and increment it
+                    const lastSubjects = subjects[subjects.length - 1];
+                    const lastCode = lastSubjects.subjectcode; // "SUB-007"
+                    const lastNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+                    SubNewCode = `SUB-${String(lastNumber + 1).padStart(3, '0')}`; // Increment and format
+                    console.log(SubNewCode)
+                }
+
+                } catch (error) {
+                    console.error("Error fetching subjects:", error);
+                }
+            });
+
+        // // Add a new row to the table
+        // document.getElementById('addRow').addEventListener('click', function () {
+        //     const tableBody = document.querySelector('#studentTable tbody');
+        //     const newRow = document.createElement('tr');
+        //     newRow.innerHTML = `
+        //         <td id="idDisplay"></td>
+        //         <td>
+        //             <select class="form-select" id="stud-select" style="width: 350px;">
+        //                 <option selected>Student</option>
+        //             </select>
+        //         </td>
+        //         <td></td>
+        //     `;
+        //     tableBody.appendChild(newRow);
+        // });
+
+        // // Delete the last row from the table
+        // document.getElementById('deleteRow').addEventListener('click', function () {
+        //     const tableBody = document.querySelector('#studentTable tbody');
+        //     const lastRow = tableBody.lastElementChild;
+        //     if (lastRow) {
+        //         tableBody.removeChild(lastRow);
+        //     } else {
+        //         alert('No rows to delete');
+        //     }
+        // });
+
+        async function fetchSubjects() {
+            const response = await fetch(`http://${ip}/api/SubjectsDropdown`);
+            const subject = await response.json();
+            return subject;
+        }
+
+        let dataTable;
+
+        async function showModal() {
+            userModal.style.display = 'block';
+            const subj = await fetchSubjects();
+
+            // Initialize or reinitialize DataTable
+            if ($.fn.DataTable.isDataTable('#userTable')) {
+                dataTable.destroy();
+                $('#userTable').empty();
+            }
+
+            subList.innerHTML = ''; // Clear previous list
+            subj.forEach(subject => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${subject.subjectcode}</td>
+                    <td>${subject.description}</td>
+                    <td>${subject.section}</td>
+                    <td>${subject.classcode}</td>
+                `;
+                row.addEventListener('click', () => selectSubject(subject));
+                subList.appendChild(row);
+            });
+
+            // Initialize DataTable with pagination
+            dataTable = $('#userTable').DataTable({
+                "pagingType": "full_numbers",
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50],
+                "responsive": true,
+                "dom": '<"top"lf>rt<"bottom"ip>',
+                "language": {
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    },
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "search": "Search:"
+                }
+            });
+            
+            dataTable.columns.adjust().draw();
+        }
+
+        // Populate
+        function selectSubject(subject) {
+            subCode.value = subject.subjectcode;
+            subName.value = subject.description;
+            subSection.value = subject.section;
+            subClassCode.value = subject.classcode;
+            closeModal();
+        }
+
+        // Close the modal
+        function closeModal() {
+            if ($.fn.DataTable.isDataTable('#userTable')) {
+                dataTable.destroy();
+            }
+            userModal.style.display = 'none';
+        }
+
+        // Add Subjects
+        async function addSubject() {
+
+            // Get form data for class (subject)
+            const subcode = subCode.value;
+            const subnames = subName.value;
+            const classcode = subClassCode.value;
+            const sections = subSection.value;
+
+            // Class data to be sent for class creation
+            const classData = {
+                subjectcode: SubNewCode,
+                description: subnames,
+                section: sections,
+                classcode: classcode
+            };
+
+            console.log(classData);
+
+            try {
+                // First API Call: Create the class
+                const classResponse = await fetch(`http://${ip}/api/Subjects_Admins`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(classData),
+                });
+
+                if (!classResponse.ok) {
+                    throw new Error('Failed to save class');
+                }
+
+                alert('Class and schedules added successfully!');
+                // location.reload();  // Reload
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            }
+        }
+        
+
+        // // Add Student Subjects
+        //     try {
+        //         let table = document.getElementById("studentTable").getElementsByTagName('tbody')[0];
+        //         let rows = table.getElementsByTagName("tr");
+        //         let data = [];
+
+        //         for (let row of rows) {
+        //             let inputs = row.getElementsByTagName("input");
+        //             let rowData = {
+        //                 studsubjectcode: 'SSub-006',
+        //                 studcode: studentcode.value,
+        //                 subcode: subCode.value
+        //             };
+        //             data.push(rowData);
+        //         }
+
+        //         console.log(data);
+
+        //             // API Call to post each schedule
+        //             const studSubResponse = await fetch(`https://${ip}/api/StudentSubjects`, { 
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json',
+        //                 },
+        //                 body: JSON.stringify(data),
+        //             });
+
+        //             if (!studSubResponse.ok) {
+        //                 throw new Error('Failed to save schedule');
+        //             } 
+                
+        //             alert('Class schedules added successfully!');
+        //         } catch (error) {
+        //                 console.error('Error:', error);
+        //                 alert('An error occurred: ' + error.message);
+        //             }
+            // });
+
+
+        // Update Subjects
+        async function updateSubject() {
+
+            // Get form data for class (subject)
+            const subcode = subCode.value;
+            const subnames = subName.value;
+            const sections = subSection.value;
+            const classcode = subClassCode.value;
+
+            // Class data to be sent for class creation
+            const classData = {
+                subjectcode: subcode,
+                description: subnames,
+                section: sections,
+                classcode: classcode
+            };
+
+            try {
+                // First API Call: Create the class
+                const classResponse = await fetch(`http://${ip}/api/UpdateSubjects`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(classData),
+                });
+
+                if (!classResponse.ok) {
+                    throw new Error('Failed to save class');
+                }
+
+                alert('Class and schedules added successfully!');
+                // location.reload();  // Reload
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            }
+        }
+
+        // Delete student
+        async function deleteSubjects() {
+            const classcode = subClassCode.value;
+            const response = await fetch(`http://${ip}/api/DeleteSubjects/${classcode}`)
+            if (response.ok) {
+                alert('Subject deleted successfully');
+                // Optionally reset the form or refresh the list
+            } else {
+                alert('Error deleting subject');
+            }
+        }
+
+        findBtn.addEventListener('click', showModal);
+        addBtn.addEventListener('click', addSubject);
+        updateBtn.addEventListener('click', updateSubject);
+        closeModalBtn.addEventListener('click', closeModal);
+        deleteBtn.addEventListener('click', deleteSubjects);
+        
+    </script>
+</body>
+</html>
