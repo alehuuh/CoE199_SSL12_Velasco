@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <style>
+        :root {
+            --base-font-size: 18px;
+            --heading-scale: 1.25; 
+            --small-text: 0.875;  
+            --icon-scale: 1.2; 
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            font-size: var(--base-font-size);
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 70px 20px 20px 250px;
+            min-width: 320px;
+            overflow-x: hidden;
+            transition: padding 0.3s ease;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #7B1113;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        header h2 {
+            font-size: calc(1rem * var(--heading-scale) * 0.85);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header a.button {
+            font-size: calc(1rem * var(--small-text));
+            padding: 4px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            color: white;
+            background-color: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+            background: #7B1113;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: calc(1rem * var(--icon-scale));
+        }
+
+        /* Sidebar Styles */
+        .sidenav {
+            width: 250px;
+            height: calc(100vh - 50px);
+            background-color: #fff;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 900;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .nav, .bottom-menu {
+            list-style-type: none;
+            padding: 15px 0;
+        }
+
+        .nav li, .bottom-menu li {
+            padding: 12px 20px;
+            margin: 3px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav li a, .bottom-menu li a {
+            display: flex;
+            align-items: center;
+            color: #444;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .nav li a i, .bottom-menu li a i {
+            margin-right: 12px;
+            font-size: calc(1rem * var(--icon-scale));
+            color: #7B1113;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            position: relative;
+            margin-right: 320px;
+            transition: margin-right 0.3s ease;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .section-title {
+            color: #7B1113;
+            margin-bottom: 15px;
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background-color: #7B1113;
+            color: white;
+            position: sticky;
+            top: 0;
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: calc(1rem * var(--small-text));
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .content-wrapper {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 800;
+            overflow: hidden;
+        }
+
+        .text-xs {
+            font-size: calc(1rem * var(--small-text));
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .h5 {
+            font-size: calc(1rem * var(--heading-scale) * 1.5);
+            font-weight: 600;
+            color: #333;
+            margin: 8px 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-header .details {
+            display: flex;
+            gap: 20px;
+        }
+
+        .dashboard-header h5 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Calendar Styles */
+        #datepicker {
+            width: 330px; 
+            height: 400px; 
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 5px;
+            overflow: hidden;
+        }
+
+        #datepicker table {
+            min-width: 100% !important;
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        #datepicker .ui-datepicker-header {
+            background-color: #7B1113;
+            color: white;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 0;
+        }
+
+        #datepicker th {
+            padding: 8px 5px;
+            font-size: calc(1rem * var(--small-text));
+            text-align: center;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        #datepicker td {
+            padding: 8px 5px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-size: calc(1rem * var(--small-text));
+        }
+
+        #datepicker .ui-datepicker-today {
+            background-color: #7B1113;
+            color: white;
+        }
+
+        /* Responsive Breakpoints */
+        @media screen and (max-width: 1200px) {
+            :root {
+                --base-font-size: 15px;
+            }
+            
+            body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            
+            .main-content {
+                margin-right: 300px;
+            }
+        }
+
+        @media screen and (max-width: 1200px) {
+            :root {
+                --base-font-size: 14px;
+            }
+            
+            body {
+                padding-left: 20px;
+                padding-top: 60px;
+            }
+
+            h1{
+                padding-left: 60px;
+            }
+            
+            .main-content {
+                margin-right: 300px;
+            }
+            
+            .sidenav {
+                transform: translateX(-100%);
+            }
+            
+            .sidenav.show {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+                background: 	#7B1113;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            :root {
+                --base-font-size: 13px;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .content-wrapper {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin-top: 20px;
+            }
+            
+            header {
+                flex-direction: column;
+                height: auto;
+                padding: 10px;
+                text-align: center;
+            }
+            
+            header h1, header h2 {
+                width: 100%;
+                margin: 5px 0;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            :root {
+                --base-font-size: 12px;
+            }
+            
+            body {
+                padding: 60px 10px 10px 10px;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="material-icons">menu</i>
+    </button>
+    
+    <header>
+        <h1>Welcome</h1>
+        <h2>You are logged in as <span id="name" style="font-weight: bold;"></span><a href="../login.html" class="button" onclick="logout()">Logout</a></h2>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidenav">
+        <ul class="nav">
+            <li class="active"><a href="Dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+            <li><a href="classes.html"><i class="material-icons">people</i> Classes</a></li>
+            <li><a href="attendance.html"><i class="material-icons">assignment</i> Attendance</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <!-- Calendar -->
+        <div class="content-wrapper">
+            <div id="datepicker"></div>
+        </div>
+
+        <!-- Current Class -->
+        <div class="container">
+            <h3 class="section-title">Current Class</h3>
+            
+            <div class="dashboard-header">
+                <div class="details">
+                    <h5>Class: <span id="current-class">-</span></h5>
+                    <h5>Room: <span id="current-room">-</span></h5>
+                    <h5>Total: <span id="current-total">-</span></h5>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="current-class-table" class="display">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Time in</th>
+                            <th>Time out</th>
+                        </tr>
+                    </thead>
+                    <tbody id="output">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Upcoming Classes -->
+        <div class="container">
+            <h3 class="section-title">Upcoming Classes</h3>
+            <div class="table-responsive">
+                <table id="upcoming-class-table" class="display">
+                    <thead>
+                        <tr>
+                            <th>Time From</th>
+                            <th>Time To</th>
+                            <th>Subject Code</th>
+                            <th>Subject</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-output">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let api = sessionStorage.getItem("api");
+        let insCode = sessionStorage.getItem("instructorcode");
+        let insName = sessionStorage.getItem("instructorname");
+
+        function logout() {
+            sessionStorage.clear(); // Clears all session data
+            localStorage.clear(); 
+        }
+
+        window.onload = function () {
+            if (!sessionStorage.getItem("loggedIn")) {
+                window.location.href = "../login.html";
+            }
+        };
+
+        // Prevent going back to the previous page after logout
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function () {
+            window.history.pushState(null, "", window.location.href);
+        };
+
+
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.querySelector('.sidenav').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidenav = document.querySelector('.sidenav');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (!sidenav.contains(e.target) && e.target !== menuToggle) {
+                sidenav.classList.remove('show');
+            }
+        });
+
+        // Show menu toggle when zoomed
+        function checkZoom() {
+            const menuToggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 1200 || window.devicePixelRatio > 1.25) {
+                menuToggle.style.display = 'block';
+            } else {
+                menuToggle.style.display = 'none';
+                document.querySelector('.sidenav').classList.remove('show');
+            }
+        }
+
+        window.addEventListener('resize', checkZoom);
+        window.addEventListener('load', checkZoom);
+
+        $(document).ready(function() {
+            $('#current-class-table').DataTable({
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "dom": '<"top"lf>rt<"bottom"ip>',
+                "data": [],
+                "columns": [
+                    { "title": "Student ID" },
+                    { "title": "Name" },
+                    { "title": "Time in" },
+                    { "title": "Time out" }
+                ]
+            });
+
+            $('#upcoming-class-table').DataTable({
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "dom": '<"top"lf>rt<"bottom"ip>',
+                "data": [],
+                "columns": [
+                    { "title": "Time From" },
+                    { "title": "Time To" },
+                    { "title": "Subject Code" },
+                    { "title": "Subject" }
+                ]
+            });
+
+            fetchData();
+        });
+
+        document.getElementById('name').innerHTML = insName;
+
+        function getDateTime() {
+            var now     = new Date(); 
+            var year    = now.getFullYear();
+            var month   = now.getMonth() + 1; 
+            var day     = now.getDate();
+            var hour    = now.getHours();
+            var minute  = now.getMinutes();
+            var second  = now.getSeconds(); 
+            
+            if (month.toString().length == 1) {
+                month = '0' + month;
+            }
+            if (day.toString().length == 1) {
+                day = '0' + day;
+            }   
+            if (hour.toString().length == 1) {
+                hour = '0' + hour;
+            }
+            if (minute.toString().length == 1) {
+                minute = '0' + minute;
+            }
+            if (second.toString().length == 1) {
+                second = '0' + second;
+            }   
+            
+            var dateTime = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+            return dateTime;
+        }
+
+    var currentTime = getDateTime();  // Store the current time into a variable
+    console.log("Current: ", currentTime)
+
+
+    // Date Picker
+    $(function() {
+        $("#datepicker").datepicker({
+            dateFormat: 'yy-mm-dd',
+            firstDay: 0,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            changeMonth: true,
+            changeYear: true,
+            dayNamesMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            beforeShowDay: function(date) {
+                return [true, ''];
+            },
+            onSelect: function(dateText, inst) {
+            }
+        });
+    });
+    
+    // Update Table
+    function updateTotal() {
+        const rowCount = document.querySelectorAll('#output tr').length;
+        document.querySelector('.dashboard-header .details h5:nth-child(2)').innerText = `Total: ${rowCount}`;
+    }
+
+    // Function to convert military time to 12-hour format
+    function convertTo12HourFormat(timestamp) {
+        const timeString12Hour = moment.utc(timestamp).format("h:mm A");;
+        
+        return timeString12Hour
+    }
+
+    const now = moment.utc().format("HH:mm"); // format to hours and minutes
+    console.log(now);
+
+    async function fetchData() {
+        try {
+            const response1 = await fetch(`http://${api}/api/iotlogs_Current/${insCode}`);
+            const json1 = await response1.json();
+            
+            const currentTable = $('#current-class-table').DataTable();
+            currentTable.clear();
+            
+            if (json1.length === 0) {
+                currentTable.row.add(['No data available', '', '', '']).draw();
+            } else {
+                json1.forEach(element => {
+                    const timein = element.timein ? convertTo12HourFormat(element.timein) : '';
+                    const timeout = element.timeout ? convertTo12HourFormat(element.timeout) : '';
+                    document.getElementById('current-class').innerText = element.description;
+                    document.getElementById('current-room').innerText = element.room;
+
+
+                    currentTable.row.add([
+                        element.studcode,
+                        element.studname,
+                        timein,
+                        timeout
+                    ]).draw(false);
+                });
+            }
+            
+            const response2 = await fetch(`http://${api}/api/Instructor_nextclass/${insCode}/${currentTime}`);
+            const json2 = await response2.json();
+            
+            const upcomingTable = $('#upcoming-class-table').DataTable();
+            upcomingTable.clear();
+            
+            if (json2.length === 0) {
+                upcomingTable.row.add(['No data available', '', '', '']).draw();
+            } else {
+                json2.forEach(element => {
+
+                    // const formattedTimeFrom = element.sched_time_from ? moment.utc(element.sched_time_from).format("HH:mm") : null;
+                    // console.log(formattedTimeFrom);
+                    // // If timein matches the current time, skip this row
+                    // if (formattedTimeFrom === now) {
+                    //     return; // skip this row
+                    // }
+
+                    const sched_time_from = convertTo12HourFormat(element.sched_time_from);
+                    const sched_time_to = convertTo12HourFormat(element.sched_time_to);
+                    
+                    upcomingTable.row.add([
+                        sched_time_from,
+                        sched_time_to,
+                        element.subjectcode,
+                        element.description
+                    ]).draw(false);
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+    </script>
+</body>
+</html>
