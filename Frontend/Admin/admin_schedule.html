@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/javascript" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+    <style>
+        :root {
+            --base-font-size: 18px; 
+            --heading-scale: 1.25;  
+            --small-text: 0.875;    
+            --icon-scale: 1.2;   
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            font-size: var(--base-font-size);
+        }
+
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 70px 20px 20px 250px;
+            min-width: 320px;
+            overflow-x: hidden;
+            font-size: 1rem;
+            transition: padding 0.3s ease;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: 	#7B1113;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        header h2 {
+            font-size: calc(1rem * var(--heading-scale) * 0.85);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header a.button {
+            font-size: calc(1rem * var(--small-text));
+            padding: 4px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            color: white;
+            background-color: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+            background: 	#7B1113;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: calc(1rem * var(--icon-scale));
+        }
+
+        /* Sidebar Styles */
+        .sidenav {
+            width: 250px;
+            height: calc(100vh - 50px);
+            background-color: #fff;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 900;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .nav, .bottom-menu {
+            list-style-type: none;
+            padding: 15px 0;
+        }
+
+        .nav li, .bottom-menu li {
+            padding: 12px 20px;
+            margin: 3px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav li a, .bottom-menu li a {
+            display: flex;
+            align-items: center;
+            color: #444;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .nav li a i, .bottom-menu li a i {
+            margin-right: 12px;
+            font-size: calc(1rem * var(--icon-scale));
+            color: 	#7B1113;
+        }
+
+        /* Main Content Styles */
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            font-size: 1rem;
+        }
+
+        .section-title {
+            color: 	#7B1113;
+            margin-bottom: 15px;
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+        }
+
+        /* Form Styles */
+        .form-control {
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal-footer{
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0px 0px 700px;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            font-size: 1rem;
+        }
+
+        .modal-content h2 {
+            font-size: calc(1rem * var(--heading-scale) * 1.3);
+        }
+
+        .modal-content table.dataTable {
+            margin: 10px 0 !important;
+            width: 100% !important;
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_length,
+        .modal-content .dataTables_wrapper .dataTables_filter,
+        .modal-content .dataTables_wrapper .dataTables_info,
+        .modal-content .dataTables_wrapper .dataTables_paginate {
+            padding: 8px;
+            font-size: calc(1rem * var(--small-text));
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 2px 8px;
+            margin: 0 2px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #7B1113;
+            color: white !important;
+            border-color: #7B1113;
+        }
+
+        .modal-content .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #f0f0f0;
+        }
+
+        .modal-content table.dataTable thead th {
+            padding: 10px 15px;
+        }
+
+        .modal-content table.dataTable tbody td {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        .modal-content table.dataTable tbody tr:hover {
+            background-color: rgba(123, 17, 19, 0.1);
+        }
+
+        #userTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        #userTable th, #userTable td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #userTable th {
+            font-size: calc(1rem * var(--small-text));
+            background-color: 	#7B1113;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        table th {
+            background-color: 	#7B1113;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            font-weight: 500;
+            font-size: calc(1rem * var(--small-text));
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1rem;
+        }
+
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Responsive Font Scaling */
+        @media screen and (max-width: 992px) {
+            :root {
+                --base-font-size: 15px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            :root {
+                --base-font-size: 14px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            :root {
+                --base-font-size: 13px;
+            }
+            
+            #userTable th, #userTable td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 1200px) {
+            body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            h1{
+                padding-left: 50px;
+            }
+            
+            .sidenav {
+                transform: translateX(-100%);
+            }
+            
+            .sidenav.show {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+                background: 	#7B1113;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding-top: 100px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            header {
+                flex-direction: column;
+                height: auto;
+                text-align: center;
+                padding: 10px;
+            }
+            
+            header h1, header h2 {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            #userTable {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            #userTable th, #userTable td {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-toggle" id="menuToggle"><i class="material-icons">menu</i></button><h1> Welcome</h1>
+        <h2>You are logged in as admin <span id="name" style="font-weight: bold;"></span><a href="../login.html" class="button" onclick="logout()">Logout</a></h2>
+    </header>
+
+    <!-- Admin Sidebar -->
+    <div class="sidenav">
+        <ul class="nav">
+            <li><a href="admin_dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+    
+            <!-- Manage Classes Dropdown -->
+            <li>
+                <a href="#classDropdown" data-bs-toggle="collapse" class="dropdown-toggle">
+                    <i class="material-icons">subject</i> Manage Records
+                </a>
+                <ul class="collapse list-unstyled" id="classDropdown">
+                    <li><a href="admin_student.html" class="dropdown-item">Manage Students</a></li>
+                    <li><a href="admin_teacher.html" class="dropdown-item">Manage Instructors</a></li>
+                    <li><a href="admin_class.html" class="dropdown-item">Manage Subjects</a></li>
+                    <li><a href="admin_courses.html" class="dropdown-item">Manage Courses</a></li>
+                    <li><a href="admin_schedule.html" class="dropdown-item">Manage Schedule</a></li>
+                </ul>
+            </li>
+    
+            <li><a href="admin_subjects.html"><i class="material-icons">people</i>Classes</a></li>
+            <!-- <li><a href="admin_attendance.html"><i class="material-icons">assignment</i>Attendance</a></li> -->
+        </ul>
+        <ul class="nav">
+            <li><a href="admin_settings.html"><i class="material-icons">settings</i> Settings</a></li>
+        </ul>
+    </div> 
+
+    <!-- Main Content -->
+    <div class="container">
+        <h3 class="section-title">Add Class Schedule</h3>
+        <form id="subjectsForm" method="POST" action="/submit">
+            <div class="mb-3">
+                <label for="schedcode" class="form-label">Sched Code</label>
+                <input type="text" class="form-control" id="schedcode" name="schedcode" readonly="readonly" required>
+            </div>
+            <div class="mb-3">
+                <label for="subcode" class="form-label">Subject Code</label>
+                <input type="text" class="form-control" id="subcode" name="subcode" readonly="readonly" required>
+            </div>
+            <div class="mb-3">
+                <label for="section" class="form-label">Section</label>
+                <input type="text" class="form-control" id="section" name="section" required>
+            </div>
+            <div class="mb-3">
+                <label for="classcode" class="form-label">Class Code</label>
+                <input type="text" class="form-control" id="classcode" name="classcode" required>
+            </div>
+            <div class="mb-3">
+                <label for="room" class="form-label">Room</label>
+                <input type="text" class="form-control" id="room" name="room" required>
+            </div>
+            <select class="form-select" id="subjects-select" style="width: 350px;">
+                <option selected>Subject Name</option>
+            </select>
+        
+            <table id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Time From</th>
+                        <th>Time To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select name="day[]" class="form-select" id="day">
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="time" class="form-control" name="time_from[]" id="time_from" required>
+                        </td>
+                        <td>
+                            <input type="time" class="form-control" name="time_to[]" id="time_to" required>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="buttons">
+                <button type="button" id="addRow" class="btn btn-primary">Add Row</button>
+                <button type="button" id="deleteRow" class="btn btn-danger">Delete Row</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="delete" class="btn btn-danger">Delete</button>
+                <button type="button" id="find" class="btn btn-info">Find Record</button>
+                <button type="button" onclick="reset()" class="btn btn-info">Clear</button>
+                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="button" id="saveBtn" class="btn btn-success mt-3">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Schedule Selection Modal -->
+    <div id="schedModal" class="modal-backdrop">
+        <div class="modal-content">
+            <h2>Select Class</h2>
+            <div class="table-container">
+                <table id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Sched Code</th>
+                            <th>Subject Code</th>
+                            <th>Subject Name</th>
+                            <th>Section</th>
+                            <th>Day</th>
+                            <th>Time From</th>
+                            <th>Time To</th>
+                            <th>Class Code</th>
+                            <th>Room</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-output">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalBtn" class="btn btn-danger">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ip = sessionStorage.getItem("api");
+
+        function logout() {
+            sessionStorage.clear(); // Clears all session data to prevent accessing again after logout
+            localStorage.clear();
+        }
+
+        window.onload = function () {
+            if (!sessionStorage.getItem("loggedIn")) {
+                window.location.href = "../login.html";
+            }
+        };
+
+        const findBtn = document.getElementById('find');
+        const deleteBtn = document.getElementById('delete');
+        const updateBtn = document.getElementById('saveBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const schedModal = document.getElementById('schedModal');
+        const schedList = document.getElementById('schedule-output');
+        const subCode = document.getElementById('subcode');
+        const schedCode = document.getElementById('schedcode');
+        const subName = document.getElementById('subjects-select');
+        const subSection = document.getElementById('section');
+        const subClasscode = document.getElementById('classcode');
+        const subRoom = document.getElementById('room');
+        const subDay = document.getElementById('day');
+        const subFrom = document.getElementById('time_from');
+        const subTo = document.getElementById('time_to');
+
+        function reset() {
+            document.getElementById("detailsForm").reset();
+        }
+
+        // Fetch schedule codes
+        let latestSchedCode = '';
+
+        // Fetch the latest schedule code when the page loads
+        // async function getLatestSchedCode() {
+        //     const response = await fetch(`http://${ip}/api/Subjects`);
+        //     const data = await response.json();
+            
+        //     const latestCode = data[data.length - 1].schedcode;
+
+        //     const numericPart = latestCode.split('-')[1];
+
+        //     // Increment the numeric part
+        //     const nextCode = parseInt(numericPart, 10) + 1;
+        //     console.log(nextCode);
+
+        //     latestSchedCode = `SCHED-${nextCode.toString().padStart(3, '0')}`;
+        // }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+        try {
+            const response = await fetch(`http://${ip}/api/Subjects`);
+            const schedule = await response.json();
+
+            if (schedule.length > 0) {
+                // Extract the highest teacher code and increment it
+                const lastSched = schedule[schedule.length - 1];
+                const lastCode = lastSched.studcode; // "STUD-007"
+                const lastNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+                newSchedCode = `SCHED-${String(lastNumber + 1).padStart(3, '0')}`; // Increment and format
+                console.log(lastCode);
+                console.log(newSchedCode);
+            } else {
+                newSchedCode = "SCHED-001";
+            }
+
+            console.log(newSchedCode);
+
+            } catch (error) {
+                console.error("Error fetching teachers:", error);
+            }
+        });
+
+        // Function to convert military time to 12-hour format
+        function convertTo12HourFormat(timeString) {
+            const time_from_ISO = moment(timeString);
+            const timeString12Hour = time_from_ISO.format("hh:mm A");
+            
+            return timeString12Hour
+        }
+
+
+        function convertTo12HourFormat2(timeString) {
+            const time_from_ISO = moment.utc(timeString).format("hh:mm A");
+            
+            return time_from_ISO
+        }
+
+        let dataTable;
+
+        async function showModal() {
+            schedModal.style.display = 'block';
+            const sched = await fetchSchedule();
+
+            // Initialize or reinitialize DataTable
+            if ($.fn.DataTable.isDataTable('#userTable')) {
+                dataTable.destroy();
+                $('#userTable').empty();
+            }
+
+            schedList.innerHTML = '';
+
+            // Loop through each schedule and create a table row for each schedule
+            sched.forEach(schedule => {
+                const row = document.createElement('tr');
+                const twelveHourTimeFrom = convertTo12HourFormat2(schedule.sched_time_from);
+                const twelveHourTimeTo = convertTo12HourFormat2(schedule.sched_time_to);
+
+                row.innerHTML = `
+                    <td>${schedule.schedcode}</td>
+                    <td>${schedule.subjectcode}</td>
+                    <td>${schedule.description}</td>
+                    <td>${schedule.section}</td>
+                    <td>${schedule.sched_days}</td>
+                    <td>${twelveHourTimeFrom}</td>
+                    <td>${twelveHourTimeTo}</td>
+                    <td>${schedule.classcode}</td>
+                    <td>${schedule.room}</td>
+                `;
+                
+                // Add click event to select a schedule
+                row.addEventListener('click', () => selectSchedule(schedule));
+                schedList.appendChild(row);
+            });
+
+            // Initialize DataTable with pagination
+            dataTable = $('#userTable').DataTable({
+                "pagingType": "full_numbers",
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50],
+                "responsive": true,
+                "dom": '<"top"lf>rt<"bottom"ip>',
+                "language": {
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
+                    },
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "search": "Search:"
+                }
+            });
+            
+            dataTable.columns.adjust().draw();
+        }
+
+        // Fetch all schedules for the selected subject code
+        async function fetchSchedule() {
+            const selectedSubjectCode = subCode.value; // Get the subject code from the input
+            const response = await fetch(`http://${ip}/api/Subjects`);
+            const sched = await response.json();
+            return sched;
+        }
+
+        // Select the clicked schedule and populate the form fields
+        function selectSchedule(schedule) {
+            schedCode.value = schedule.schedcode;
+            subCode.value = schedule.subjectcode;
+            subSection.value = schedule.section;
+            subClasscode.value = schedule.classcode;
+            subRoom.value = schedule.room
+            const subjectSelect = document.getElementById("subjects-select");
+
+            const options = subjectSelect.options;
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === schedule.subjectcode) {
+                    subjectSelect.selectedIndex = i;
+                    break;
+                }
+            }
+
+            subDay.value = schedule.sched_days;
+            subFrom.value = new Date(schedule.sched_time_from).toISOString().split("T")[1].split(".")[0];
+            subTo.value = new Date(schedule.sched_time_to).toISOString().split("T")[1].split(".")[0];
+
+            closeModal();
+        }
+
+        // Close the modal
+        function closeModal() {
+            if ($.fn.DataTable.isDataTable('#userTable')) {
+                dataTable.destroy();
+            }
+            schedModal.style.display = 'none';
+        }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            await getLatestSchedCode();
+
+            try {
+                // Fetch the subjects from the API
+                const subjectsResponse = await fetch(`http://${ip}/api/SubjectsDropdown`);
+                const subjects = await subjectsResponse.json();
+
+                const subjectSelect = document.getElementById("subjects-select");
+
+                subjects.forEach(subject => {
+                    const option = document.createElement("option");
+                    option.value = subject.subjectcode;
+                    option.textContent = subject.description; 
+                    subjectSelect.appendChild(option);
+                });
+
+                let selectedSubjectCode = null;
+
+                subjectSelect.addEventListener("change", function () {
+                    selectedSubjectCode = subjectSelect.value;
+                    sessionStorage.setItem("selectSubCode", selectedSubjectCode);
+                    
+                    const subCodeField = document.getElementById("subcode");
+                    subCodeField.value = selectedSubjectCode;
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        });
+
+        // Add a new row to the table
+        document.getElementById('addRow').addEventListener('click', function () {
+            const tableBody = document.querySelector('#scheduleTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                    <select name="day[]" class="form-select">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="time" class="form-control" name="time_from[]" required>
+                </td>
+                <td>
+                    <input type="time" class="form-control" name="time_to[]" required>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        });
+
+        // Delete the last row from the table
+        document.getElementById('deleteRow').addEventListener('click', function () {
+            const tableBody = document.querySelector('#scheduleTable tbody');
+            const lastRow = tableBody.lastElementChild;
+            if (lastRow) {
+                tableBody.removeChild(lastRow);
+            } else {
+                alert('No rows to delete');
+            }
+        });
+
+        // Submit form and post schedules
+        document.getElementById('subjectsForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const subnamesvalue = document.getElementById('subjects-select');
+            const subnames = subnamesvalue.options[subnamesvalue.selectedIndex].text;
+            const Section = subSection.value;
+            let selectSubCode = sessionStorage.getItem("selectSubCode");
+
+            const days = document.querySelectorAll('[name="day[]"]');
+            const time_froms = document.querySelectorAll('[name="time_from[]"]');
+            const time_tos = document.querySelectorAll('[name="time_to[]"]');
+            console.log(time_froms);
+
+            let schedules = [];
+
+            // Loop through all schedule rows and collect data
+            for (let i = 0; i < days.length; i++) {
+                const day = days[i].value;
+                const time_from = time_froms[i].value;
+                const time_to = time_tos[i].value;
+
+                const [from_hours, from_minutes] = time_from.split(':');
+                const from_date = new Date();
+                from_date.setHours(from_hours);
+                from_date.setMinutes(from_minutes);
+                from_date.setSeconds(0);
+                from_date.setMilliseconds(0);
+
+                const [to_hours, to_minutes] = time_to.split(':');
+                const to_date = new Date();
+                to_date.setHours(to_hours);
+                to_date.setMinutes(to_minutes);
+                to_date.setSeconds(0);
+                to_date.setMilliseconds(0);
+
+                const from_isoString = from_date.toISOString();
+                const to_isoString = to_date.toISOString();
+
+                // Generate a new schedule code for each row
+                // const newSchedCode = `SCHED-${(parseInt(latestSchedCode.split('-')[1]) + i).toString().padStart(3, '0')}`;
+
+                schedules.push({
+                    schedcode: newSchedCode,
+                    subjectcode: selectSubCode,
+                    description: subnames,
+                    sched_days: day,
+                    sched_time_from: from_isoString,
+                    sched_time_to: to_isoString,
+                    section: Section
+                });
+            }
+
+            try {
+                // Create schedules for the class
+                for (let schedule of schedules) {
+                    const scheduleData = {
+                        schedcode: schedule.schedcode,
+                        subjectcode: selectSubCode,
+                        description: subnames,
+                        sched_days: schedule.sched_days,
+                        sched_time_from: schedule.sched_time_from,
+                        sched_time_to: schedule.sched_time_to,
+                        section: Section
+                    };
+
+                    console.log(scheduleData);
+
+                    // API Call to post each schedule
+                    const scheduleResponse = await fetch(`http://${ip}/api/SubjectsSched`, { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(scheduleData),
+                    });
+
+                    if (!scheduleResponse.ok) {
+                        throw new Error('Failed to save schedule');
+                    }
+                }
+
+                alert('Class schedules added successfully!');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred: ' + error.message);
+            }
+        });
+
+        // Delete schedule
+        async function deleteSchedule() {
+            const schedcode = schedCode.value;
+            const response = await fetch(`http://${ip}/api/DeleteSchedules/${schedcode}`)
+            if (response.ok) {
+                alert('Schedule deleted successfully');
+            } else {
+                alert(`Error deleting Schedule ${schedcode}`);
+            }
+        }
+
+        function formatTimeForSQL(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            return `${hours}:${minutes}:00.0000000`;
+        }
+
+
+        async function updateSchedule() {
+
+            const sub_time_from = document.querySelectorAll('[name="time_from[]"]');
+            const sub_time_to = document.querySelectorAll('[name="time_to[]"]');
+            const subnamesvalue = document.getElementById('subjects-select');
+            const subnames = subnamesvalue.options[subnamesvalue.selectedIndex].text;
+            
+            const updatedSchedule = {
+                schedcode: schedCode.value,
+                subjectcode: subCode.value,
+                description: subnames,
+                sched_days: subDay.value,
+                sched_time_from: formatTimeForSQL(sub_time_from[0].value),
+                sched_time_to: formatTimeForSQL(sub_time_to[0].value),
+                section: subSection.value,
+                classcode: subClasscode.value,
+                room: subRoom.value
+            };
+
+            console.log(updatedSchedule);
+
+            const response = await fetch(`http://${ip}/api/UpdateSubjectSched`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedSchedule)
+            });
+
+            if (response.ok) {
+                alert('Schedule updated successfully');
+                // location.reload();
+            } else {
+                alert('Error updating Schedule');
+            }
+        }
+
+        deleteBtn.addEventListener('click', deleteSchedule);
+        updateBtn.addEventListener('click', updateSchedule);
+        findBtn.addEventListener('click', showModal);
+        closeModalBtn.addEventListener('click', closeModal);
+
+    </script>    
+</body>
+</html>

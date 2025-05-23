@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/javascript" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+    <style>
+        :root {
+            --base-font-size: 18px; 
+            --heading-scale: 1.25; 
+            --small-text: 0.875;  
+            --icon-scale: 1.2;  
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            font-size: var(--base-font-size);
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 70px 20px 20px 250px;
+            min-width: 320px;
+            overflow-x: hidden;
+            transition: padding 0.3s ease;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: 	#7B1113;
+            color: white;
+            padding: 10px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        header h2 {
+            font-size: calc(1rem * var(--heading-scale) * 0.85);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header a.button {
+            font-size: calc(1rem * var(--small-text));
+            padding: 4px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            color: white;
+            background-color: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+            background: 	#7B1113;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: calc(1rem * var(--icon-scale));
+        }
+
+        /* Sidebar Styles */
+        .sidenav {
+            width: 250px;
+            height: calc(100vh - 50px);
+            background-color: #fff;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 900;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .nav, .bottom-menu {
+            list-style-type: none;
+            padding: 15px 0;
+        }
+
+        .nav li, .bottom-menu li {
+            padding: 12px 20px;
+            margin: 3px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav li a, .bottom-menu li a {
+            display: flex;
+            align-items: center;
+            color: #444;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .nav li a i, .bottom-menu li a i {
+            margin-right: 12px;
+            font-size: calc(1rem * var(--icon-scale));
+            color: 	#7B1113;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            position: relative;
+            margin-right: 320px;
+            transition: margin-right 0.3s ease;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .section-title {
+            color: 	#7B1113;
+            margin-bottom: 15px;
+            font-size: calc(1rem * var(--heading-scale));
+            font-weight: 500;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background-color: 	#7B1113;
+            color: white;
+            position: sticky;
+            top: 0;
+            font-weight: 500;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: calc(1rem * var(--small-text));
+        }
+
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* Form Elements */
+        .file-upload-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .file-upload-container input[type="file"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-width: 200px;
+            flex: 1;
+            font-size: 1rem;
+        }
+
+        .file-upload-container button {
+            padding: 8px 16px;
+            background-color: 	#7B1113;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Cards Styles */
+        .content-wrapper {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 800;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .text-xs {
+            font-size: calc(1rem * var(--small-text));
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .h5 {
+            font-size: calc(1rem * var(--heading-scale) * 1.5);
+            font-weight: 600;
+            color: #333;
+            margin: 8px 0;
+        }
+
+        /* Responsive Breakpoints */
+        @media screen and (max-width: 1200px) {
+            :root {
+                --base-font-size: 15px;
+            }
+            
+            body {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            
+            .main-content {
+                margin-right: 300px;
+            }
+        }
+
+        @media screen and (max-width: 1200px) {
+            :root {
+                --base-font-size: 14px;
+            }
+            
+            body {
+                padding-left: 20px;
+                padding-top: 60px;
+            }
+
+            h1{
+                padding-left: 50px;
+            }
+            
+            .main-content {
+                margin-right: 300px;
+            }
+            
+            .sidenav {
+                transform: translateX(-100%);
+            }
+            
+            .sidenav.show {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1100;
+                background: 	#7B1113;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            :root {
+                --base-font-size: 13px;
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .content-wrapper {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin-top: 20px;
+            }
+            
+            .card {
+                flex: 1 1 calc(50% - 15px);
+                min-width: 200px;
+            }
+            
+            header {
+                flex-direction: column;
+                height: auto;
+                padding: 10px;
+                text-align: center;
+            }
+            
+            header h1, header h2 {
+                width: 100%;
+                margin: 5px 0;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            :root {
+                --base-font-size: 12px;
+            }
+            
+            body {
+                padding: 60px 10px 10px 10px;
+            }
+            
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .card {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="menu-toggle" id="menuToggle"><i class="material-icons">menu</i></button><h1> Welcome</h1>
+        <h2>You are logged in as admin <span id="name" style="font-weight: bold;"></span><a href="../login.html" class="button" onclick="logout()">Logout</a></h2>
+    </header>
+
+    <!-- Admin Sidebar -->
+    <div class="sidenav">
+        <ul class="nav">
+            <li><a href="admin_dashboard.html"><i class="material-icons">dashboard</i> Dashboard</a></li>
+    
+            <!-- Manage Classes Dropdown -->
+            <li>
+                <a href="#classDropdown" data-bs-toggle="collapse" class="dropdown-toggle">
+                    <i class="material-icons">subject</i> Manage Records
+                </a>
+                <ul class="collapse list-unstyled" id="classDropdown">
+                    <li><a href="admin_student.html" class="dropdown-item">Manage Students</a></li>
+                    <li><a href="admin_teacher.html" class="dropdown-item">Manage Instructors</a></li>
+                    <li><a href="admin_class.html" class="dropdown-item">Manage Subjects</a></li>
+                    <li><a href="admin_courses.html" class="dropdown-item">Manage Courses</a></li>
+                    <li><a href="admin_schedule.html" class="dropdown-item">Manage Schedule</a></li>
+                </ul>
+            </li>
+    
+            <li><a href="admin_subjects.html"><i class="material-icons">people</i>Classes</a></li>
+            <!-- <li><a href="admin_attendance.html"><i class="material-icons">assignment</i>Attendance</a></li> -->
+        </ul>
+        <ul class="nav">
+            <li><a href="admin_settings.html"><i class="material-icons">settings</i> Settings</a></li>
+        </ul>
+    </div> 
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <h3 class="section-title">Dashboard</h3>
+            <div class="file-upload-container">
+                <input type="file" id="csvFile" />
+                <button onclick="uploadCsv()">Upload CSV</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <h3 class="section-title">Classes</h3>
+            <div class="table-responsive">
+                <table id="classes-table" class="display">
+                    <thead>
+                        <tr>
+                            <th>Class Code</th>
+                            <th>Class</th>
+                            <th>Day</th>
+                            <th>Schedule</th>
+                            <th>Instructor(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classes-output">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="container">
+            <h3 class="section-title">Instructors</h3>
+            <div class="table-responsive">
+                <table id="instructors-table" class="display">
+                    <thead>
+                        <tr>
+                            <th>Instructor Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="instructor-output">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="content-wrapper">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="text-xs">Students</div>
+                    <div class="h5" id="studentsCount">0</div>
+                </div>
+                <i class="fas fa-users fa-2x text-info"></i>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="text-xs">Instructors</div>
+                    <div class="h5" id="teacherCount">0</div>
+                </div>
+                <i class="fas fa-chalkboard-teacher fa-2x text-success"></i>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="text-xs">Classes</div>
+                    <div class="h5" id="classCount">0</div>
+                </div>
+                <i class="fas fa-school fa-2x text-warning"></i>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let ip = sessionStorage.getItem("api");
+        let admincode = sessionStorage.getItem("admincode");
+        console.log(admincode);
+
+        function logout() {
+            sessionStorage.clear(); // Clears all session data
+            localStorage.clear();
+        }
+
+        window.onload = function () {
+            if (!sessionStorage.getItem("loggedIn")) {
+                window.location.href = "../login.html";
+            }
+        };
+
+         // Menu toggle functionality
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.querySelector('.sidenav').classList.toggle('show');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const sidenav = document.querySelector('.sidenav');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (!sidenav.contains(e.target) && e.target !== menuToggle) {
+                sidenav.classList.remove('show');
+            }
+        });
+
+        // Show menu toggle when zoomed
+        function checkZoom() {
+            const menuToggle = document.getElementById('menuToggle');
+            if (window.innerWidth < 1200 || window.devicePixelRatio > 1.25) {
+                menuToggle.style.display = 'block';
+            } else {
+                menuToggle.style.display = 'none';
+                document.querySelector('.sidenav').classList.remove('show');
+            }
+        }
+
+        window.addEventListener('resize', checkZoom);
+        window.addEventListener('load', checkZoom);
+            
+        // Generate student code
+        async function NextstudentCode() {
+            try {
+                const response = await fetch(`http://${ip}/api/StudentsRecords`);
+                const students = await response.json();
+
+                let lastNumber = 0;
+                if (students.length > 0) {
+                    // Extract the highest teacher code and increment it
+                    const lastStudent = students[students.length - 1];
+                    const lastCode = lastStudent.studcode; // "STUD-007"
+                    lastNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+                }
+
+                return lastNumber;
+
+                } catch (error) {
+                    console.error("Error fetching teachers:", error);
+                    return 0;
+                }
+        };
+
+        // Generate subject code
+        async function NextSubjectCode() {
+            try {
+                const response = await fetch(`http://${ip}/api/SubjectsDropdown`);
+                const subjects = await response.json();
+
+                let lastSubNumber = 0;
+                if (subjects.length > 0) {
+                    // Extract the highest teacher code and increment it
+                    const lastSubject = subjects[subjects.length - 1];
+                    const lastCode = lastSubject.subjectcode; // "SUB-007"
+                    lastSubNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+
+                }
+
+                return lastSubNumber;
+
+                } catch (error) {
+                    console.error("Error fetching Subjects:", error);
+                    return 0;
+                }
+        };
+
+        async function NextSubInstructorCode() {
+            try {
+                const response = await fetch(`http://${ip}/api/SubjectsInstructor`);
+                const subinst = await response.json();
+
+                let lastSubInstNumber = 0;
+                if (Array.isArray(subinst) && subinst.length > 0) {
+                    // Ensure the last element exists and has the expected property
+                    const lastSubInst = subinst[subinst.length - 1];
+
+                    if (lastSubInst && lastSubInst.subjectinstructorcode) {
+                        const lastCode = lastSubInst.subjectinstructorcode; // e.g., "Isub-007"
+                        const parts = lastCode.split('-'); 
+                        
+                        if (parts.length === 2 && !isNaN(parseInt(parts[1], 10))) {
+                            lastSubInstNumber = parseInt(parts[1], 10); // Extract number part
+                        }
+                    }
+                }
+
+                return lastSubInstNumber;
+
+            } catch (error) {
+                console.error("Error fetching SubjectsInstructor:", error);
+                return 0;
+            }
+        }
+
+        // Generate sched code
+        async function NextSchedCode() {
+            try {
+                const response = await fetch(`http://${ip}/api/Subjects`);
+                const sched = await response.json();
+
+                let lastSchedNumber = 0;
+                if (sched.length > 0) {
+                    // Extract the highest teacher code and increment it
+                    const lastSched = sched[sched.length - 1];
+                    const lastCode = lastSched.schedcode; // "SCHED-007"
+                    lastSchedNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+
+                }
+
+                return lastSchedNumber;
+
+                } catch (error) {
+                    console.error("Error fetching Schedules:", error);
+                    return 0;
+                }
+        };
+
+        // Generate studsub code
+        async function NextStudSubCode() {
+            try {
+                const response = await fetch(`http://${ip}/api/StudSubjects`);
+                const studsub = await response.json();
+
+                let lastStudSubNumber = 0;
+                if (studsub.length > 0) {
+                    // Extract the highest teacher code and increment it
+                    const lastStudSub = studsub[studsub.length - 1];
+                    const lastCode = lastStudSub.studsubjectcode; // "Ssub-007"
+                    lastStudSubNumber = parseInt(lastCode.split('-')[1], 10); // Extract number part
+                }
+
+                return lastStudSubNumber;
+
+                } catch (error) {
+                    console.error("Error fetching Studentsubject:", error);
+                    return 0;
+                }
+        };
+
+        // Numbers of students, instructors, and classes
+        async function fetchData() {
+            try {
+                const response = await fetch(`http://${ip}/api/Instructors`);
+                const instructorss = await response.json();
+
+                const instructors = instructorss.slice(1);
+                
+                // Get the teacher count
+                const teacherCount = instructors.length;
+
+                // Update the teacher count in the HTML
+                document.getElementById('teacherCount').textContent = teacherCount;
+
+                if (instructors.length == 0) {
+                    document.querySelector('#instructor-output').innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No data available</td>
+                        </tr>
+                    `;
+                } else {
+                    instructors.forEach(tableElementsInstructors);
+                    $('#instructors-table').DataTable({
+                        "pageLength": 5,
+                        "lengthMenu": [5, 10, 25, 50, 100]
+                    });
+                } 
+
+            } catch (error) {
+                console.error("Error fetching instructors:", error);
+            }
+
+            try {
+                const response = await fetch(`http://${ip}/api/Subjects`);
+                const subjects = await response.json();
+                
+                // Get the teacher count
+                const subujectCount = subjects.length;
+
+                // Update the teacher count in the HTML
+                document.getElementById('classCount').textContent = subujectCount;
+
+            } catch (error) {
+                console.error("Error fetching classes:", error);
+            }
+
+            try {
+                const response = await fetch(`http://${ip}/api/StudentsRecords`);
+                const students = await response.json();
+                
+                // Get the teacher count
+                const studentCount = students.length;
+
+                // Update the teacher count in the HTML
+                document.getElementById('studentsCount').textContent = studentCount;
+
+            } catch (error) {
+                console.error("Error fetching students:", error);
+            }
+
+            try {
+                const response1 = await fetch(`http://${ip}/api/ClassSchedules`);
+                const json1 = await response1.json();
+                
+                // Process the first set of data
+                if (json1.length == 0) {
+                    document.querySelector('#classes-output').innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No data available</td>
+                        </tr>
+                    `;
+                } else {
+                    json1.forEach(tableElementsClassSched);
+                    $('#classes-table').DataTable({
+                        "pageLength": 5,
+                        "lengthMenu": [5, 10, 25, 50, 100]
+                    });
+                }      
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        function tableElementsClassSched(element) {
+            const classcode = element.classcode;
+            const classname = element.description;
+            const section = element.section;
+            const scheddays = element. sched_days;
+            console.log(element.sched_time_from);
+            const timefrom = convertTo12HourFormat(element.sched_time_from);
+            const timeto = convertTo12HourFormat(element.sched_time_to);
+            const schedule = `${timefrom} - ${timeto} `
+            const instructor = element.Instructors;
+
+            document.querySelector('#classes-output').innerHTML += `
+                <tr>
+                    <td>${classcode}</td>
+                    <td>${classname}/${section}</td>
+                    <td>${scheddays}</td>
+                    <td>${schedule}</td>
+                    <td>${instructor}</td>
+                </tr>
+            `;
+        }
+
+        function tableElementsInstructors(instructor) {
+            const instname = `${instructor.instructor_ln}, ${instructor.instructor_fn} `;
+            const email = instructor.email;
+
+            document.querySelector('#instructor-output').innerHTML += `
+                <tr>
+                    <td>${instname}</td>
+                    <td>${email}</td>
+                </tr>
+            `;
+        }
+
+    // Call the fetchData function when the page loads
+    document.addEventListener('DOMContentLoaded', fetchData);
+    
+    // Title function
+    function titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+        }
+        // return the joined string and remove whitespaces existing
+        return splitStr.join(' ').trimStart(); 
+    }
+
+    let processedSchedules = new Set();
+    let processedStudents = new Set();
+
+    function expandDays(abbr) {
+        const dayMappings = {
+            "M": "Monday",
+            "T": "Tuesday",
+            "W": "Wednesday",
+            "Th": "Thursday",
+            "F": "Friday",
+            "S": "Saturday",
+            "Su": "Sunday"
+        };
+
+        let result = [];
+        let i = 0;
+        
+        while (i < abbr.length) {
+            let char = abbr[i];
+            let nextChar = abbr[i + 1] || "";
+
+            // Handle "Th" (Thursday) first
+            if (char === "T" && nextChar === "h") {
+                result.push(dayMappings["Th"]);
+                i += 2;
+            } 
+            // Handle "Su" (Sunday)
+            else if (char === "S" && nextChar === "u") {
+                result.push(dayMappings["Su"]);
+                i += 2;
+            } 
+            // Handle single-letter days (M, T, W, F, S)
+            else if (dayMappings[char]) {
+                result.push(dayMappings[char]);
+                i++;
+            } 
+            // Skip unknown characters
+            else {
+                i++;
+            }
+        }
+
+        return result;
+    }
+
+    console.log(expandDays("TTh"))
+
+    function parseCSV(csv) {
+        // Split into lines and parse each line as CSV
+        let lines = csv.trim().split("\n").map(line => {
+            let result = [];
+            let inQuotes = false;
+            let currentField = "";
+            
+            for (let char of line) {
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(currentField.trim());
+                    currentField = "";
+                } else {
+                    currentField += char;
+                }
+            }
+            result.push(currentField.trim());
+            return result;
+        });
+
+        // Extract subject information
+        let fullSubject = lines[5][1]?.trim() || "";
+        let split = fullSubject.split(' ');
+
+        let description = split.slice(0, 2).join(' ');
+        let section = split.slice(2).join(' ');
+
+        let classcode = lines[3][1]?.trim() || "";
+
+        // Parse schedule information
+        let schedule = lines[8][1]?.trim() || "";
+        schedule = schedule.replace(/^"(.*)"$/, '$1');
+        let scheduleEntries = schedule.split(/\s*; \s*/).map(entry => entry.trim());
+        console.log(scheduleEntries)
+
+        let schedules = [];
+        scheduleEntries.forEach(entry => {
+            // Extract days
+            let dayMatch = entry.match(/^([A-Za-z]+)/);
+            let dayAbbr = dayMatch ? dayMatch[1] : "";
+            let subdays = expandDays(dayAbbr);
+
+            // Extract time range
+            let timeMatch = entry.match(/(\d{1,2})(:(\d{2}))?-(\d{1,2})(:(\d{2}))?([AP]M)?/i);
+            let subfrom = "", subto = "";
+
+            if (timeMatch) {
+                // Convert start time
+                let startHour = timeMatch[1];
+                let startMin = timeMatch[3] || "00";
+                let endHour = timeMatch[4];
+                let endMin = timeMatch[6] || "00";
+                let ampm = timeMatch[7] ? timeMatch[7].toUpperCase() : "PM"; 
+
+                subfrom = `${startHour}:${startMin}${ampm}`;
+                subto = `${endHour}:${endMin}${ampm}`;
+            }
+
+            // Extract room - everything after the time range
+            let roomStart = timeMatch ? entry.slice(timeMatch.index + timeMatch[0].length).trim() : entry.slice(dayAbbr.length).trim();
+            let room = roomStart.replace(/^(lab|lec)\s*/i, '').trim(); // Remove "lab" prefix if present
+
+            // Create schedule entries for each day
+            subdays.forEach(day => {
+                schedules.push({
+                    sched_days: day,
+                    sched_time_from: subfrom || "",
+                    sched_time_to: subto || "",
+                    room: room
+                });
+            });
+        });
+
+        // Parse all instructors
+        let instructorslist = lines[10]?.slice(1).map(name => name.trim()).filter(name => name !== "") || [];
+        let instnames = instructorslist.map(item => item.split(';')).flat();
+
+        let instructors = [];
+        for (let i = 0; i < instnames.length; i += 2) {
+            if (instnames[i + 1]) {
+                instructors.push(
+                    instnames[i] + ', ' + 
+                    instnames[i + 1].charAt(0).toUpperCase() + 
+                    instnames[i + 1].slice(1)
+                );
+            } else {
+                instructors.push(instnames[i]);
+            }
+        }
+
+        // Parse student data
+        let studentData = [];
+        for (let i = 15; i < lines.length; i++) {
+            let numbering = lines[i][0]?.trim();
+            let studentNum = lines[i][1]?.trim();
+            let lastName = lines[i][2]?.trim();
+            let firstName = lines[i][3]?.trim();
+            let course = lines[i][7]?.trim();
+            
+            if (!numbering || isNaN(numbering)) break;
+            if (!studentNum && !lastName && !firstName && !course) continue;
+
+            studentData.push({
+                student_number: studentNum,
+                lastname: titleCase(lastName),
+                firstname: titleCase(firstName),
+                course: course,
+            });
+        }
+
+        // Return single object with all instructors in an array
+        return {
+            description: description,
+            instructors: instructors.map(titleCase),
+            section: section,
+            classcode: classcode,
+            schedules: schedules,
+            students: studentData
+        };
+    }
+
+    // File upload function
+    async function uploadCsv() {
+        const fileInput = document.getElementById('csvFile');
+        const file = fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = async function (e) {
+                try {
+                    const csvContent = e.target.result;
+                    const parsedData = parseCSV(csvContent);
+                    console.log("Parsed data:", parsedData);
+                    
+                    if (!parsedData || !parsedData.description) {
+                        alert("No valid data found in CSV");
+                        return;
+                    }
+
+                    const classcode = parsedData.classcode;
+                    console.log(classcode);
+                    
+                    // First delete existing records
+                    console.log("Deleting existing records for class:", classcode);
+                    await fetch(`http://${ip}/api/DeleteRecords/${classcode}`);
+                    
+                    // Send all data in one batch
+                    console.log("Posting new data...");
+                    await sendDataToApi(parsedData);
+                    
+                    alert("Data uploaded successfully!");
+                    // location.reload();
+                } catch (error) {
+                    console.error("Error processing CSV:", error);
+                    alert("Error processing CSV: " + error.message);
+                }
+            };
+
+            reader.readAsText(file);
+        } else {
+            alert('Please select a CSV file.');
+        }
+    }
+
+    function convertToISO (format) {
+        const time_from_12hr = moment(format, "hh:mmA");
+        const time_fromISO = time_from_12hr.format("HH:mm:ss");
+        
+        return time_fromISO
+    }
+
+    console.log(convertToISO("2:30PM"))
+
+    // Function to convert military time to 12-hour format
+    function convertTo12HourFormat(timestamp) {
+        const timeString12Hour = moment.utc(timestamp).format("h:mm A");;
+        
+        return timeString12Hour
+    }
+
+    console.log(convertTo12HourFormat("1970-01-01T11:30:00.000Z"))
+
+    async function fetchSubjectCodes(description) {
+        try {
+            const response = await fetch(`http://${ip}/api/SubjectsDropdown`);
+            const subjects = await response.json();
+
+            // Find the subject that matches
+            const matchingSubject = subjects.find(subject => subject.description === description);
+
+            if (matchingSubject) {
+                return matchingSubject.subjectcode
+            } else {
+                console.error("No matching subject found for description:", description);
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching subjects:", error);
+            return null;
+        }
+    }
+
+    async function fetchStudentCodes(studnum) {
+        try {
+            const response = await fetch(`http://${ip}/api/StudentsRecords`);
+            const students = await response.json();
+
+            const matchingStudent = students.find(student => student.studnum == studnum);
+
+            if (matchingStudent) {
+                return matchingStudent.studcode
+            } else {
+                console.error("No matching student found for studnum:", studnum);
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching students:", error);
+            return null;
+        }
+    }
+
+    // Function to send data to API
+    async function sendDataToApi(batchData) {
+        try {
+            // Post Subject Data
+            let lastSubNumber = await NextSubjectCode();
+            lastSubNumber += 1;
+            const subcode = `SUB-${String(lastSubNumber).padStart(4, '0')}`;
+
+            const subjectData = {
+                subjectcode: subcode,
+                description: batchData.description,
+                section: batchData.section,
+                classcode: batchData.classcode,
+                room: batchData.schedules[0]?.room || ""
+            };
+
+            console.log("Posting New Subject:", subjectData);
+            let subjectResponse = await fetch(`http://${ip}/api/UpdateSubjects`, {
+                method: 'POST',
+                body: JSON.stringify(subjectData),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            let subjectResult = await subjectResponse.json();
+
+            let subjectCodes;
+            if (subjectResult == 2) {
+                await fetch(`http://${ip}/api/UpdateSubjects`, {
+                    method: 'POST',
+                    body: JSON.stringify(subjectData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                subjectCodes = subcode;
+            } else {
+                console.log("Successfully Updated Subject");
+                subjectCodes = await fetchSubjectCodes(batchData.description);
+            }
+
+            // Post all instructors
+            for (const instructor of batchData.instructors) {
+                const subjectInstructData = {
+                    subjectinstructorcode: `Isub-${String(await NextSubInstructorCode() + 1).padStart(3, '0')}`,
+                    subjectcode: subjectCodes,
+                    instructorname: instructor
+                };
+
+                console.log("Posting Subject Instructor:", subjectInstructData);
+                await fetch(`http://${ip}/api/Subjects_Instructor`, {
+                    method: 'POST',
+                    body: JSON.stringify(subjectInstructData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+
+            // Post all schedules
+            for (const schedule of batchData.schedules) {
+                let lastSchedNumber = await NextSchedCode();
+                lastSchedNumber += 1;
+                const schedcode = `SCHED-${String(lastSchedNumber).padStart(3, '0')}`;
+
+                const schedData = {
+                    schedcode: schedcode,
+                    subjectcode: subjectCodes,
+                    description: batchData.description,
+                    sched_days: schedule.sched_days,
+                    sched_time_from: convertToISO(schedule.sched_time_from),
+                    sched_time_to: convertToISO(schedule.sched_time_to),
+                    section: batchData.section,
+                    classcode: batchData.classcode,
+                    room: schedule.room
+                };
+
+                console.log("Posting Schedule:", schedData);
+                let schedResponse = await fetch(`http://${ip}/api/UpdateSubjectSched`, {
+                    method: 'POST',
+                    body: JSON.stringify(schedData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                let schedResult = await schedResponse.json();
+                if (schedResult == 2) {
+                    console.log("Retrying schedule post...");
+                    await fetch(`http://${ip}/api/UpdateSubjectSched`, {
+                        method: 'POST',
+                        body: JSON.stringify(schedData),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+            }
+
+            // Post all students
+            for (const student of batchData.students) {
+                let lastStudentNumber = await NextstudentCode();
+                lastStudentNumber += 1;
+                const studcode = `STUD-${String(lastStudentNumber).padStart(3, '0')}`;
+
+                const studentData = {
+                    studcode: studcode,
+                    studfname: student.firstname,
+                    studlname: student.lastname,
+                    coursecode: student.course,
+                    studnum: student.student_number,
+                    studrfid: "null"
+                };
+
+                console.log("Posting New Student:", studentData);
+                let studentResponse = await fetch(`http://${ip}/api/UpdateStudents`, {
+                    method: 'POST',
+                    body: JSON.stringify(studentData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                let studentResult = await studentResponse.json();
+
+                let studentCodes;
+                if (studentResult == 2) {
+                    await fetch(`http://${ip}/api/UpdateStudents`, {
+                        method: 'POST',
+                        body: JSON.stringify(studentData),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                } else {
+                    console.log("Successfully Updated Student");
+                    
+                }
+                studentCodes = await fetchStudentCodes(studentData.studnum);
+
+                // Student Subject
+                let lastStudSubNumber = await NextStudSubCode();
+                lastStudSubNumber += 1;
+
+                const studentsubjectData = {
+                    studsubjectcode: `SSub-${String(lastStudSubNumber).padStart(3, '0')}`,
+                    studcode: studentCodes,
+                    subjectcode: subjectCodes
+                };
+
+                console.log("Posting New Student Subject:", studentsubjectData);
+                await fetch(`http://${ip}/api/UpdateStudentSubject`, {
+                    method: 'POST',
+                    body: JSON.stringify(studentsubjectData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+
+            console.log("All data has been successfully posted.");
+        } catch (error) {
+            console.error("Error posting data:", error);
+            throw error;
+        }
+    }
+
+    </script>
+</body>
+</html>
