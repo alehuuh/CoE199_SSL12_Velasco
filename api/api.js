@@ -1,6 +1,6 @@
 var keythereum = require("keythereum");
-var datadir = "/AlejaThesis/Blockchain/node2/data/";
-var address= "0x0d58afbc8b4d9e1c42b095004d8e96ff5318e65a"; 
+var datadir = "/-/Blockchain/node2/data/";
+var address= "0x-"; 
 const password = "123456";
 
 var keyObject = keythereum.importFromFile(address, datadir);
@@ -44,8 +44,7 @@ router.use((request, response, next) =>{
     next();
 })
 /* middleware for authentication, login operations */ 
-// Run every day at 5:00 PM
-cron.schedule('00 15 * * *', () => {
+cron.schedule('00 * * * *', () => {
     console.log('Running attendance email job...');
     dboperations.sendAttendanceEmails();
 });
@@ -433,16 +432,3 @@ router.route('/rfid').post((request, response)=>{
     
      })
 })
-// capture rfid - papa 05052025
-
-
-/*
-
-router.route('/IotLogs_Current/:instructorcode').get((request, response)=>{
-
-    dboperations.getIotLogs_current(request.params.instructorcode).then(result => {
-        response.json(result[0]);
-    
-     })
-}) 
-*/
