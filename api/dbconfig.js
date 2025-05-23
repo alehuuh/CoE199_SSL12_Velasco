@@ -1,12 +1,12 @@
  const config = {
     user:'sa',
-    password: 'alejav30',
+    password: '',
     server:'localhost',
-    database:'Attendance_Monitoring',
+    database:'',
      options:{
         trustedConnection: true,
         enableArithAbort: true,
-        instancename: 'AVVNODE2', 
+        instancename: '', 
     }, 
     port : 1434
  }
