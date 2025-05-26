@@ -293,62 +293,55 @@ async function getAttendance_Instructor(instructorcode, subjectcode = null, stud
     }
  }
 
- async function AddIotLogs(iotlogs){
-    
-    try{
-        // Append to Sql Server -S-
-            let sqlconnection = await sql.connect(config);
-            let addLogs = await sqlconnection.request()
-                .input('deviceId', sql.VarChar, iotlogs.deviceid)
-                .input('devicename', sql.VarChar, iotlogs.devicename)
-                .input('deviceloc', sql.VarChar, iotlogs.deviceloc)
-                .input('rfid', sql.VarChar, iotlogs.rfid)
-                .input('classcode', sql.VarChar, iotlogs.classcode)
-                .input('timestamp', sql.VarChar, iotlogs.timestamp)
-                .input('transvalue', sql.VarChar, iotlogs.transvalue)
-                .execute('AVV_SP_AddIotLogs')
-            //return addLogs.recordsets; 
-        // Append to Sql Server -E-
+ async function AddIotLogs(iotlogs) {
+    try {
+        // Step 1: Add to SQL Server
+        let sqlconnection = await sql.connect(config);
+        let addLogs = await sqlconnection.request()
+            .input('deviceId', sql.VarChar, iotlogs.deviceid)
+            .input('devicename', sql.VarChar, iotlogs.devicename)
+            .input('deviceloc', sql.VarChar, iotlogs.deviceloc)
+            .input('rfid', sql.VarChar, iotlogs.rfid)
+            .input('classcode', sql.VarChar, iotlogs.classcode)
+            .input('timestamp', sql.VarChar, iotlogs.timestamp)
+            .input('transvalue', sql.VarChar, iotlogs.transvalue)
+            .execute('AVV_SP_AddIotLogs');
 
+        // Step 2: Trigger blockchain send (but don't wait for it)
+        if (addLogs.returnValue === 1) {
+            (async () => {
+                try {
+                    const jsonResult = JSON.stringify(addLogs.recordset);
+                    const parsedResult = JSON.parse(jsonResult);
 
-        // Append to blockchain -S-
-        if (addLogs.returnValue == 1) {
-            jsonResult = JSON.stringify(addLogs.recordset);  // the addLogs.recordser gets the newly added record 
-            // JSON.stringify converts the recordset from object type to strings
+                    const transid = Math.abs(parsedResult.map(item => item.transId));
+                    const deviceid = JSON.stringify(parsedResult.map(item => item.deviceId));
+                    const devicename = JSON.stringify(parsedResult.map(item => item.deviceName));
+                    const deviceloc = JSON.stringify(parsedResult.map(item => item.deviceLoc));
+                    const rfid = JSON.stringify(parsedResult.map(item => item.rfid));
+                    const classcode = JSON.stringify(parsedResult.map(item => item.classCode));
+                    const timestamp = JSON.stringify(parsedResult.map(item => item.timeStamp));
+                    const transvalue = JSON.stringify(parsedResult.map(item => item.transValue));
 
-            //console.log(jsonResult);
-
-            const parsedResult = JSON.parse(jsonResult); //JSON.parse() converts  a JSON string  into a JavaScript object in order
-            // to get value for each item in the recordset
-            const starttime = Date.now();
-            // mapping/storing item value from recordset to a constant
-            const transid = Math.abs(parsedResult.map(item => item.transId));
-            const deviceid = JSON.stringify(parsedResult.map(item => item.deviceId));
-            const devicename = JSON.stringify(parsedResult.map(item => item.deviceName));
-            const deviceloc = JSON.stringify(parsedResult.map(item => item.deviceLoc));
-            const rfid = JSON.stringify(parsedResult.map(item => item.rfid));
-            const classcode = JSON.stringify(parsedResult.map(item => item.classCode));
-            const timestamp = JSON.stringify(parsedResult.map(item => item.timeStamp));
-            const transvalue = JSON.stringify(parsedResult.map(item => item.transValue));
-            
-            // activate iotlogs.sol contract to add recordset to blockchain using the constants above as values
-            const tranx = await contractInstance.AddIotlog(transid, deviceid, devicename, deviceloc, rfid, classcode, timestamp, transvalue);
-            // const receipt = await tranx.wait();
-            // const endtime = Date.now();
-            // console.log ("blockchian done at:", endtime-starttime);
+                    const tranx = await contractInstance.AddIotlog(transid, deviceid, devicename, deviceloc, rfid, classcode, timestamp, transvalue);
+              
+                } catch (blockchainError) {
+                    console.error("Blockchain error:", blockchainError);
+                }
+            })();
         }
-        // Append to blockchain -E-
 
-        
-        
-        getIotLogs_blkchain(); // execute function getIotLogs_blkchain defined below
+        // Optional: call getIotLogs_blkchain in background too
+        setTimeout(() => getIotLogs_blkchain(), 1000);
 
+        // Step 3: Return immediately after SQL insert
         return addLogs.returnValue;
+
+    } catch (err) {
+        console.error("AddIotLogs error:", err);
+        throw err;  // allow calling code to handle it
     }
-    catch (error){
-        console.log(error)
-    }
- }
+}
 
 
  async function getIotLogs_blkchain(){ // display/list blockchain iotlogs recorded - for checking only
