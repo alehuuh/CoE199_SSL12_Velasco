@@ -295,7 +295,7 @@ async function getAttendance_Instructor(instructorcode, subjectcode = null, stud
 
  async function AddIotLogs(iotlogs) {
     try {
-        // Step 1: Add to SQL Server
+        // Send to SQL
         let sqlconnection = await sql.connect(config);
         let addLogs = await sqlconnection.request()
             .input('deviceId', sql.VarChar, iotlogs.deviceid)
@@ -307,7 +307,7 @@ async function getAttendance_Instructor(instructorcode, subjectcode = null, stud
             .input('transvalue', sql.VarChar, iotlogs.transvalue)
             .execute('AVV_SP_AddIotLogs');
 
-        // Step 2: Trigger blockchain send (but don't wait for it)
+        // Send to Blockchain async
         if (addLogs.returnValue === 1) {
             (async () => {
                 try {
@@ -331,10 +331,7 @@ async function getAttendance_Instructor(instructorcode, subjectcode = null, stud
             })();
         }
 
-        // Optional: call getIotLogs_blkchain in background too
         setTimeout(() => getIotLogs_blkchain(), 1000);
-
-        // Step 3: Return immediately after SQL insert
         return addLogs.returnValue;
 
     } catch (err) {
